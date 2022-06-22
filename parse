@@ -4,7 +4,7 @@
 # Lexer and parser to update versioning logic
 # 6/22/2022
 
-NEW_VERSIONING_CHECK = 'TaxManager.isVersioning()'
+NEW_VERSIONING_CHECK = 'if TaxManager.isVersioning() then'
 
 import ply.lex as lex
 import ply.yacc as yacc
@@ -12,63 +12,63 @@ import argparse
 
 class Lexer():
 
-	# CONSTRUCTOR
-	def __init__(self):
-		self.lexer = lex.lex(module=self)
-		# start in the (standard) initial state
-		self.lexer.begin('INITIAL')
+    # CONSTRUCTOR
+    def __init__(self):
+        self.lexer = lex.lex(module=self)
+        # start in the (standard) initial state
+        self.lexer.begin('INITIAL')
 
-	# DESTRUCTOR
-	def __del__(self):
-		pass
+    # DESTRUCTOR
+    def __del__(self):
+        pass
 
-	tokens = ['AND', 'THEN', 'OPEN', 'CLOSE', 'QUOTE', 'NOT_EQL', 'IF', 'ST_CLIENT_STATE', 'STATE']
-	t_ignore = ' \t\r\n\f\v'
+    tokens = ['AND', 'THEN', 'OPEN', 'CLOSE', 'QUOTE', 'NOT_EQL', 'IF', 'ST_CLIENT_STATE', 'STATE']
+    t_ignore = ' \t\r\n\f\v'
 
-	def t_NEWLINE(self,t):
-		r'\n+'
-		t.lexer.lineno += len(t.value)
+    def t_NEWLINE(self,t):
+        r'\n+'
+        t.lexer.lineno += len(t.value)
 
-	def t_error(self,t):
-		print("Lexing error: Unknown character \"{}\" at line {}".format(t.value[0], t.lexer.lineno))
-		t.lexer.skip(1)
+    def t_error(self,t):
+        # print("Lexing error: Unknown character \"{}\" at line {}".format(t.value[0], t.lexer.lineno))
+        t.lexer.skip(1)
 
-	t_OPEN = '\('
-	t_CLOSE = '\)'
-	t_QUOTE = '\"'
+    t_OPEN = '\('
+    t_CLOSE = '\)'
+    t_QUOTE = '\"'
 
-	def t_AND(self, t):
-		r'and'
-		return t
-	
-	def t_THEN(self, t):
-		r'then'
-		return t
-	
-	def t_NOT_EQL(self, t):
-		r'!='
-		return t
-	
-	def t_IF(self, t):
-		r'if'
-		return t
-	
-	def t_ST_CLIENT_STATE(self, t):
-		r'ST_CLIENT_STATE'
-		return t
-	
-	def t_STATE(self, t):
-		r'MA|MD|NY|CT|NH|MI|RI|LA|VT'
-		return t
-	
-	def lex(self, input_string):
-		self.lexer.input(input_string)
-		while True:
-			tok = self.lexer.token()
-			if not tok:
-				break
-			print(str(tok).strip())
-	
+    def t_AND(self, t):
+        r'and'
+        return t
+    
+    def t_THEN(self, t):
+        r'then'
+        return t
+    
+    def t_NOT_EQL(self, t):
+        r'!='
+        return t
+    
+    def t_IF(self, t):
+        r'if'
+        return t
+    
+    def t_ST_CLIENT_STATE(self, t):
+        r'ST_CLIENT_STATE'
+        return t
+    
+    def t_STATE(self, t):
+        r'MA|MD|NY|CT|NH|MI|RI|LA|VT'
+        return t
+    
+    def lex(self, input_string):
+        self.lexer.input(input_string)
+        while True:
+            tok = self.lexer.token()
+            if not tok:
+                break
+            # print(str(tok).strip())
+    
 
 class Parser(object):
     
@@ -76,13 +76,15 @@ class Parser(object):
 
     # CONSTRUCTOR
     def __init__(self):
-		self.lexer = Lexer()
-		self.parser = yacc.yacc(module=self)
+        self.lexer = Lexer()
+        self.parser = yacc.yacc(module=self)
         self.versioning_checks = 0
         # fill with tuples (start_char, end_char)
+        # replace versioning checks starting from last one
         self.versioning_locations = []
+        self.error = 0
 
-	# DESTRUCTOR
+    # DESTRUCTOR
     def __del__(self):
         pass
     
@@ -90,37 +92,73 @@ class Parser(object):
         """
         starter : versioning_check
         """
-        print(f"Found a starter: {p.slice[1:]}")
     
     def p_versioning_check(self, p):
         """
-        versioning_check : xxx
+        versioning_check : IF OPEN inner_check CLOSE THEN
         """
+        print(f"Found a versioning check at {(p.lexpos(1), p.lexpos(5) + 4)}")
+        self.versioning_locations.append((p.lexpos(1), p.lexpos(5) + 4))
+        
     
     def p_not_state(self, p):
         """
-        not_state : ST_CLIENT_STATE NOT_EQL STATE
+        not_state : ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
         """
+    
+    def p_inner_check(self, p):
+        """
+        inner_check : not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+        """
+    
+    def p_error(self, p):
+        self.error = 1
+        if p is None:
+            print("Unexpectedly reached end of file (EOF)")
+            return
+            #raise TypeError("Unexpectedly reached end of file (EOF)")
+
+        # Note the location of the error before trying to lookahead
+        error_pos = p.lexpos
+
+        # Reading the symbols from the Parser stack
+        stack = [symbol for symbol in self.parser.symstack][1:]
+
+    def parse(self, input_string):
+
+        self.parser.parse(input_string)
+        return self.versioning_locations
+
+
+def findVersioningLocations(file):
+    write_string = ""
+    file_contents = ""
+
+    with open(file) as f:
+        file_contents = f.read()
+
+    print(f'Parsing file {file}')
+    parser = Parser()
+    locations = parser.parse(file_contents)
+    
+    print(f'Found the following versioning checks: {locations}')
+
+    for loc in reversed(locations):
+        print(f'{loc}')
+        print(f'{file_contents[loc[0]:loc[1]]}')
 
 def main(path):
-	parse_string = ""
-	file_contents = ""
-	lines = 0
+    findVersioningLocations(path)
+    
 
-	lex = Lexer()
-
-	f = open(path)
-	file_contents = f.read()
-	f.close()
-
-	lex.lex(file_contents)
+    
 
 
 if __name__ == '__main__':
 
-	arg_parser = argparse.ArgumentParser(description="Description")
-	arg_parser.add_argument("path", type=str, help="Relative path to 4gl file")
-	program_args = vars(arg_parser.parse_args())
-	path = program_args["path"]
+    arg_parser = argparse.ArgumentParser(description="Description")
+    arg_parser.add_argument("path", type=str, help="Relative path to 4gl file")
+    program_args = vars(arg_parser.parse_args())
+    path = program_args["path"]
 
-	main(path)
+    main(path)
