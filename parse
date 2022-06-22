@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+# Connor Bray
+# Lexer and parser to update versioning logic
+# 6/22/2022
+
+NEW_VERSIONING_CHECK = 'TaxManager.isVersioning()'
+
+import ply.lex as lex
+import ply.yacc as yacc
+import argparse
+
+class Lexer():
+
+	# CONSTRUCTOR
+	def __init__(self):
+		self.lexer = lex.lex(module=self)
+		# start in the (standard) initial state
+		self.lexer.begin('INITIAL')
+
+	# DESTRUCTOR
+	def __del__(self):
+		pass
+
+	tokens = ['AND', 'THEN', 'OPEN', 'CLOSE', 'QUOTE', 'NOT_EQL', 'IF', 'ST_CLIENT_STATE', 'STATE']
+	t_ignore = ' \t\r\n\f\v'
+
+	def t_NEWLINE(self,t):
+		r'\n+'
+		t.lexer.lineno += len(t.value)
+
+	def t_error(self,t):
+		print("Lexing error: Unknown character \"{}\" at line {}".format(t.value[0], t.lexer.lineno))
+		t.lexer.skip(1)
+
+	t_OPEN = '\('
+	t_CLOSE = '\)'
+	t_QUOTE = '\"'
+
+	def t_AND(self, t):
+		r'and'
+		return t
+	
+	def t_THEN(self, t):
+		r'then'
+		return t
+	
+	def t_NOT_EQL(self, t):
+		r'!='
+		return t
+	
+	def t_IF(self, t):
+		r'if'
+		return t
+	
+	def t_ST_CLIENT_STATE(self, t):
+		r'ST_CLIENT_STATE'
+		return t
+	
+	def t_STATE(self, t):
+		r'MA|MD|NY|CT|NH|MI|RI|LA|VT'
+		return t
+	
+	def lex(self, input_string):
+		self.lexer.input(input_string)
+		while True:
+			tok = self.lexer.token()
+			if not tok:
+				break
+			print(str(tok).strip())
+	
+
+class Parser(object):
+    
+    tokens = Lexer.tokens
+
+    # CONSTRUCTOR
+    def __init__(self):
+		self.lexer = Lexer()
+		self.parser = yacc.yacc(module=self)
+        self.versioning_checks = 0
+        # fill with tuples (start_char, end_char)
+        self.versioning_locations = []
+
+	# DESTRUCTOR
+    def __del__(self):
+        pass
+    
+    def p_starter(self, p):
+        """
+        starter : versioning_check
+        """
+        print(f"Found a starter: {p.slice[1:]}")
+    
+    def p_versioning_check(self, p):
+        """
+        versioning_check : xxx
+        """
+    
+    def p_not_state(self, p):
+        """
+        not_state : ST_CLIENT_STATE NOT_EQL STATE
+        """
+
+def main(path):
+	parse_string = ""
+	file_contents = ""
+	lines = 0
+
+	lex = Lexer()
+
+	f = open(path)
+	file_contents = f.read()
+	f.close()
+
+	lex.lex(file_contents)
+
+
+if __name__ == '__main__':
+
+	arg_parser = argparse.ArgumentParser(description="Description")
+	arg_parser.add_argument("path", type=str, help="Relative path to 4gl file")
+	program_args = vars(arg_parser.parse_args())
+	path = program_args["path"]
+
+	main(path)
