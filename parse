@@ -173,9 +173,12 @@ def replaceVersioningCheck(file, versioning_locations, import_location, write_st
         out.write(write_string)
 
 def main():
-    f = 'txppmast.4gl'
-    versioning_locations, import_location, file_contents = parseLocations(f)
-    replaceVersioningCheck(f, versioning_locations, import_location, file_contents)
+
+    replace_files = ['txppmast.4gl']
+
+    for f in replace_files:
+        versioning_locations, import_location, file_contents = parseLocations(f)
+        replaceVersioningCheck(f, versioning_locations, import_location, file_contents)
     
 
     
