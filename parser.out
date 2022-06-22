@@ -1,0 +1,295 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> starter
+Rule 1     starter -> versioning_check
+Rule 2     starter -> import
+Rule 3     import -> IMPORT FGL
+Rule 4     versioning_check -> IF OPEN inner_check CLOSE THEN
+Rule 5     not_state -> ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+Rule 6     inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+
+Terminals, with rules where they appear
+
+AND                  : 6 6 6 6 6 6 6 6
+CLOSE                : 4
+FGL                  : 3
+IF                   : 4
+IMPORT               : 3
+NOT_EQL              : 5
+OPEN                 : 4
+QUOTE                : 5 5
+STATE                : 5
+ST_CLIENT_STATE      : 5
+THEN                 : 4
+error                : 
+
+Nonterminals, with rules where they appear
+
+import               : 2
+inner_check          : 4
+not_state            : 6 6 6 6 6 6 6 6 6
+starter              : 0
+versioning_check     : 1
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . starter
+    (1) starter -> . versioning_check
+    (2) starter -> . import
+    (4) versioning_check -> . IF OPEN inner_check CLOSE THEN
+    (3) import -> . IMPORT FGL
+
+    IF              shift and go to state 4
+    IMPORT          shift and go to state 5
+
+    starter                        shift and go to state 1
+    versioning_check               shift and go to state 2
+    import                         shift and go to state 3
+
+state 1
+
+    (0) S' -> starter .
+
+
+
+state 2
+
+    (1) starter -> versioning_check .
+
+    $end            reduce using rule 1 (starter -> versioning_check .)
+
+
+state 3
+
+    (2) starter -> import .
+
+    $end            reduce using rule 2 (starter -> import .)
+
+
+state 4
+
+    (4) versioning_check -> IF . OPEN inner_check CLOSE THEN
+
+    OPEN            shift and go to state 6
+
+
+state 5
+
+    (3) import -> IMPORT . FGL
+
+    FGL             shift and go to state 7
+
+
+state 6
+
+    (4) versioning_check -> IF OPEN . inner_check CLOSE THEN
+    (6) inner_check -> . not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    inner_check                    shift and go to state 8
+    not_state                      shift and go to state 9
+
+state 7
+
+    (3) import -> IMPORT FGL .
+
+    $end            reduce using rule 3 (import -> IMPORT FGL .)
+
+
+state 8
+
+    (4) versioning_check -> IF OPEN inner_check . CLOSE THEN
+
+    CLOSE           shift and go to state 11
+
+
+state 9
+
+    (6) inner_check -> not_state . AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+
+    AND             shift and go to state 12
+
+
+state 10
+
+    (5) not_state -> ST_CLIENT_STATE . NOT_EQL QUOTE STATE QUOTE
+
+    NOT_EQL         shift and go to state 13
+
+
+state 11
+
+    (4) versioning_check -> IF OPEN inner_check CLOSE . THEN
+
+    THEN            shift and go to state 14
+
+
+state 12
+
+    (6) inner_check -> not_state AND . not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 15
+
+state 13
+
+    (5) not_state -> ST_CLIENT_STATE NOT_EQL . QUOTE STATE QUOTE
+
+    QUOTE           shift and go to state 16
+
+
+state 14
+
+    (4) versioning_check -> IF OPEN inner_check CLOSE THEN .
+
+    $end            reduce using rule 4 (versioning_check -> IF OPEN inner_check CLOSE THEN .)
+
+
+state 15
+
+    (6) inner_check -> not_state AND not_state . AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+
+    AND             shift and go to state 17
+
+
+state 16
+
+    (5) not_state -> ST_CLIENT_STATE NOT_EQL QUOTE . STATE QUOTE
+
+    STATE           shift and go to state 18
+
+
+state 17
+
+    (6) inner_check -> not_state AND not_state AND . not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 19
+
+state 18
+
+    (5) not_state -> ST_CLIENT_STATE NOT_EQL QUOTE STATE . QUOTE
+
+    QUOTE           shift and go to state 20
+
+
+state 19
+
+    (6) inner_check -> not_state AND not_state AND not_state . AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+
+    AND             shift and go to state 21
+
+
+state 20
+
+    (5) not_state -> ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE .
+
+    AND             reduce using rule 5 (not_state -> ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE .)
+    CLOSE           reduce using rule 5 (not_state -> ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE .)
+
+
+state 21
+
+    (6) inner_check -> not_state AND not_state AND not_state AND . not_state AND not_state AND not_state AND not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 22
+
+state 22
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state . AND not_state AND not_state AND not_state AND not_state AND not_state
+
+    AND             shift and go to state 23
+
+
+state 23
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND . not_state AND not_state AND not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 24
+
+state 24
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state . AND not_state AND not_state AND not_state AND not_state
+
+    AND             shift and go to state 25
+
+
+state 25
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND . not_state AND not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 26
+
+state 26
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state . AND not_state AND not_state AND not_state
+
+    AND             shift and go to state 27
+
+
+state 27
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND . not_state AND not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 28
+
+state 28
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state . AND not_state AND not_state
+
+    AND             shift and go to state 29
+
+
+state 29
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND . not_state AND not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 30
+
+state 30
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state . AND not_state
+
+    AND             shift and go to state 31
+
+
+state 31
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND . not_state
+    (5) not_state -> . ST_CLIENT_STATE NOT_EQL QUOTE STATE QUOTE
+
+    ST_CLIENT_STATE shift and go to state 10
+
+    not_state                      shift and go to state 32
+
+state 32
+
+    (6) inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state .
+
+    CLOSE           reduce using rule 6 (inner_check -> not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state AND not_state .)
+
