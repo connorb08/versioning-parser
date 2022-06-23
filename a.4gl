@@ -1,9 +1,0 @@
-if (ST_CLIENT_STATE != "MA" and
-   ST_CLIENT_STATE != "MD" and
-   ST_CLIENT_STATE != "NY" and
-   ST_CLIENT_STATE != "CT" and
-   ST_CLIENT_STATE != "NH" and
-   ST_CLIENT_STATE != "MI" and
-   ST_CLIENT_STATE != "RI" and
-   ST_CLIENT_STATE != "LA" and
-   ST_CLIENT_STATE != "VT") then

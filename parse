@@ -38,11 +38,11 @@ class Lexer():
     t_QUOTE = '\"'
 
     def t_IMPORT(self, t):
-        r'import'
+        r'import|IMPORT'
         return t
     
     def t_FGL(self, t):
-        r'fgl'
+        r'fgl|FGL'
         return t
 
     def t_AND(self, t):
@@ -167,47 +167,45 @@ def replaceVersioningCheck(file, versioning_locations, import_location, write_st
     for loc in reversed(versioning_locations):
         write_string = write_string[:loc[0]] + NEW_VERSIONING_CHECK + write_string[loc[1]:]
     
-    write_string = write_string[0:import_location] + f'{IMPORT_TAX_MANAGER}\n' + write_string[import_location:]
-        
-    with open('out.4gl', 'w') as out:
+    # write_string = write_string[0:import_location] + f'{IMPORT_TAX_MANAGER}\n' + write_string[import_location:]
+    
+    print(f'Writing to file {file}')
+    with open(file, 'w') as out:
         out.write(write_string)
 
 def main():
 
-    replace_files = ['txppmast.4gl']
+    replace_files = ['/workspace/src/ar/arusrmnt/arusrmnt.4gl',
+                    '/workspace/src/tx/txadchgs/txadchgs.4gl',
+                    '/workspace/src/tx/txapspas/txapspas.4gl',
+                    '/workspace/src/tx/txbilprt/txbilprt.4gl',
+                    '/workspace/src/tx/txcalexm/txcalexm.4gl',
+                    '/workspace/src/tx/txchgmnt/txchgmnt.4gl',
+                    '/workspace/src/tx/txclascd/txclascd.4gl',
+                    '/workspace/src/tx/txcrdmnt/txcrdmnt.4gl',
+                    '/workspace/src/tx/txexmmnt/txexmmnt.4gl',
+                    '/workspace/src/tx/txppimpt/txppimpt.4gl',
+                    '/workspace/src/tx/txppmast/txppmast.4gl',
+                    '/workspace/src/tx/txpprice/txpprice.4gl',
+                    '/workspace/src/tx/txppvmnt/txppvmnt.4gl',
+                    '/workspace/src/tx/txreimpt/txreimpt.4gl',
+                    '/workspace/src/tx/txremast/txremast.4gl',
+                    '/workspace/src/tx/txremove/txremove.4gl',
+                    '/workspace/src/tx/txrpfind/txrpfind.4gl',
+                    '/workspace/src/tx/txvalmnt/txvalmnt.4gl',
+                    '/workspace/src/tx/txwippra/txwippra.4gl',
+                    '/workspace/src/tx/txwirera/txwirera.4gl',
+                    '/workspace/src/txbu/txchargebu/txchargebu.4gl',
+                    '/workspace/src/txbu/txcrdcalbu/txcrdcalbu.4gl',
+                    '/workspace/src/txbu/txexmcalbu/txexmcalbu.4gl',
+                    '/workspace/src/txbu/txlistnobu/txlistnobu.4gl',
+                    '/workspace/src/txbu/txproptybu/txproptybu.4gl']
+
+
 
     for f in replace_files:
         versioning_locations, import_location, file_contents = parseLocations(f)
         replaceVersioningCheck(f, versioning_locations, import_location, file_contents)
-    
-
-# arusrmnt
-# txadchgs
-# txapspas
-# txbilprt
-# txcalexm
-# txchgmnt
-# txclascd
-# txcrdmnt
-# txexmmnt
-# txppimpt
-# txppmast
-# txpprice
-# txppvmnt
-# txreimpt
-# txremast
-# txremove
-# txrpfind
-# txvalmnt
-# txwippra
-# txwirera
-# txchargebu
-# txcrdcalbu
-# txexmcalbu
-# txlistnobu
-# txproptybu
-    
-
 
 if __name__ == '__main__':
     main()
